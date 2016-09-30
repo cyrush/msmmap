@@ -1,4 +1,5 @@
 CMakeFiles/
+build-*/
 cmake_install.cmake
 CTest*
 CMakeCache.txt*

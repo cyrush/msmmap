@@ -196,37 +196,64 @@ MMap::close()
 //-----------------------------------------------------------------------------
 int main()
 {
-    char vals[4] = {1,2,3,4};
+    unsigned char vals[4] = {1,2,3,4};
     
     std::ofstream ofs;
-    ofs.open("tout_example.bin");
+    ofs.open("tout_example.bin", std::ios_base::binary);
     if(!ofs.is_open())
     {
         // #ERROR!
         return -1;
     }
-    ofs.write(vals,4);
+    ofs.write((const char*)vals,4);
     ofs.close();
     
     MMap m;
     m.open("tout_example.bin",4);
-    char *res_vals = (char*)m.data_ptr();
+    void *res_vals = m.data_ptr();
 
-    std::cout  << (int)res_vals[0] <<  " "
-               << (int)res_vals[1] <<  " "
-               << (int)res_vals[2] <<  " "
-               << (int)res_vals[3] <<  std::endl;
+    std::cout  << (int)((unsigned char*)res_vals)[0] <<  " "
+               << (int)((unsigned char*)res_vals)[1] <<  " "
+               << (int)((unsigned char*)res_vals)[2] <<  " "
+               << (int)((unsigned char*)res_vals)[3] <<  std::endl;
     
-    res_vals[2] = 20;
+   ((unsigned char*)res_vals)[2] = 20;
     m.close();
     
     
     m.open("tout_example.bin",4);
-    res_vals = (char*)m.data_ptr();
-    std::cout  << (int)res_vals[0] <<  " "
-               << (int)res_vals[1] <<  " "
-               << (int)res_vals[2] <<  " "
-               << (int)res_vals[3] <<  std::endl;
+    res_vals = m.data_ptr();
+    std::cout  << (int)((unsigned char*)res_vals)[0] <<  " "
+               << (int)((unsigned char*)res_vals)[1] <<  " "
+               << (int)((unsigned char*)res_vals)[2] <<  " "
+               << (int)((unsigned char*)res_vals)[3] <<  std::endl;
+
+    char vals2[8] = { 0,0,0,0,
+                      0,0,0,0 };
+
+    int *ivals = (int*)vals2;
+    ivals[0] = 10;//131072;
+    ivals[1] = 20;//-131072;
+
+
+    std::ofstream ofs2;
+    ofs2.open("tout_example_2.bin", std::ios_base::binary);
+    if (!ofs2.is_open())
+    {
+        // #ERROR!
+        return -1;
+    }
+    ofs2.write(vals2, 8);
+    ofs2.close();
+
+    MMap m2;
+    m2.open("tout_example_2.bin", 8);
+    res_vals = ((char*)m2.data_ptr());
+
+    std::cout << (int)((int*)res_vals)[0] << " "
+              << (int)((int*)res_vals)[1] << std::endl;
+    m2 .close();
+
 
 }
 
